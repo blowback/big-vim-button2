@@ -6,7 +6,7 @@ This seems like a good candidate for learning some embedded rust, so I'm going t
 
 ## Hardware
 
-Board is a Huzzah32 V2 Feather, with 8MB flash and 2MB RAM, It's got LiPoly battery management onboard and an RGB LED.
+Board is an [Adafruit Huzzah32 Feather V2](https://learn.adafruit.com/adafruit-esp32-feather-v2/overview), with 8MB flash and 2MB RAM, It's got LiPoly battery management onboard and an RGB LED.
 
 We've got a red LED on GPIO13, an RGB LED on GPIO0 (power from GPIO2).
 
@@ -65,5 +65,10 @@ let mut led = PinDriver::output(peripherals.pins.gpio2.downgrade_output())?;
 led.set_high()?;
 led.setlow()?;
 ```
+
+## Individual pins are represented by TYPES
+
+For example, GPIO0 is represented by Gpio0 which is a *type*, not an instance. This means that you can't put them in arrays. But handily, you can use those `downgrade_*` methods mentioned above to get an `Any*Pin` type that you *can* put in an array.
+
 
 
