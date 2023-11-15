@@ -8,7 +8,7 @@ This seems like a good candidate for learning some embedded rust, so I'm going t
 
 Board is an [Adafruit Huzzah32 Feather V2](https://learn.adafruit.com/adafruit-esp32-feather-v2/overview), with 8MB flash and 2MB RAM, It's got LiPoly battery management onboard and an RGB LED.
 
-We've got a red LED on GPIO13, an RGB LED on GPIO0 (power from GPIO2).
+We've got a red LED on GPIO13, an RGB LED (NeoPixel, WS2712B compatible) on GPIO0 (power from GPIO2).
 
 We've got a button on GPIO38.
 
@@ -29,6 +29,7 @@ Generated project with `cargo generate` and the template `esp-idf-template` (i.e
 
 [ESP32 Standard Library Embedded Rust: GPIO Control](https://apollolabsblog.hashnode.dev/esp32-standard-library-embedded-rust-gpio-control) would have been a much better starting point, in retrospect.
 
+[esp-idf-hal NeoPixel example using RMT peripheral](https://github.com/esp-rs/esp-idf-hal/blob/master/examples/rmt_neopixel.rs)
 
 ## Things we have learned
 
@@ -66,7 +67,7 @@ led.set_high()?;
 led.setlow()?;
 ```
 
-## Individual pins are represented by TYPES
+### Individual pins are represented by TYPES
 
 For example, GPIO0 is represented by Gpio0 which is a *type*, not an instance. This means that you can't put them in arrays. But handily, you can use those `downgrade_*` methods mentioned above to get an `Any*Pin` type that you *can* put in an array.
 
