@@ -14,6 +14,9 @@ use anyhow::Result;
 mod neopixel;
 use crate::neopixel::*;
 
+mod keyboard;
+use crate::keyboard::*;
+
 static FLAG: AtomicBool = AtomicBool::new(false);
 
 // ISR, runs in interrupt context. do not call std, libc, or FreeRTOS functions!
@@ -29,7 +32,17 @@ fn main() -> Result<()> {
     // Bind the log crate to the ESP Logging facilities
     esp_idf_svc::log::EspLogger::initialize_default();
 
+    // WDT OFF
+    // unsafe {
+    //     esp_idf_sys::esp_task_wdt_delete(esp_idf_sys::xTaskGetIdleTaskHandleForCPU(
+    //         esp_idf_hal::cpu::core() as u32,
+    //     ));
+    // };
+
     log::info!("Hello, world!");
+
+    // setup the BLE keyboard
+    let mut keyboard = Keyboard::new();
 
     // take the device peripherals
     let peripherals = Peripherals::take()?;
@@ -68,11 +81,16 @@ fn main() -> Result<()> {
     // ...so we enable it here
     button.enable_interrupt()?;
 
+    // MAIN LOOP
     let _ = (00..360).cycle().try_for_each(|hue| {
         if FLAG.load(Ordering::Relaxed) {
             FLAG.store(false, Ordering::Relaxed);
             println!("Button pressed!");
             button.enable_interrupt()?;
+
+            if keyboard.connected() {
+                keyboard.write("Button pressed!");
+            }
         }
 
         if hue % 60 == 0 {
